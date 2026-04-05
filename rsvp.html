@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RSVP · Eugene &amp; Thandolwakhe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="main.js" defer></script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">Eugene &amp; Thandolwakhe</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="party.html">Wedding Party</a></li>
+      <li><a href="travel.html">Travel</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="rsvp.html" class="active">RSVP</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header fade-up">
+    <div class="page-eyebrow">Kindly respond by September 1, 2026</div>
+    <div class="page-title">RSVP</div>
+    <div class="page-subtitle">We hope you can join us</div>
+  </div>
+  <div class="page-body">
+    <div class="rsvp-wrap">
+      <div id="rsvpForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="fname">First Name</label>
+            <input type="text" class="form-input" id="fname" name="first_name" placeholder="Your first name"/>
+            <span class="field-error" id="fnameError"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lname">Last Name</label>
+            <input type="text" class="form-input" id="lname" name="last_name" placeholder="Your last name"/>
+            <span class="field-error" id="lnameError"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" class="form-input" id="email" name="email" placeholder="your@email.com"/>
+          <span class="field-error" id="emailError"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Will you be attending?</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="attending" value="yes" checked/> Joyfully accepts</label>
+            <label class="radio-label"><input type="radio" name="attending" value="no"/> Regretfully declines</label>
+          </div>
+        </div>
+        <div class="form-group" id="guestCountGroup">
+          <label class="form-label" for="guestCount">Number of guests (including yourself)</label>
+          <select class="form-select" id="guestCount" name="guest_count"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+        </div>
+        <div class="form-group" id="mealGroup">
+          <label class="form-label" for="meal">Meal preference</label>
+          <select class="form-select" id="meal" name="meal_preference"><option value="">— Select one —</option><option>No preference</option><option>Vegetarian</option><option>Vegan</option><option>Halal</option><option>Gluten-free</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="notes">Dietary notes or a message for the couple</label>
+          <textarea class="form-textarea" id="notes" name="notes" placeholder="Allergies, special needs, or a note..."></textarea>
+        </div>
+        <button class="btn-outline" id="submitBtn" style="width:100%;text-align:center">Submit RSVP</button>
+      </div>
+      <div class="rsvp-success" id="rsvpSuccess">
+        <div class="rsvp-success-ring">&#x2713;</div>
+        <div class="gold-divider" style="margin-bottom:1.5rem"><div class="gold-divider-diamond"></div></div>
+        <h3 id="successTitle">Thank you!</h3>
+        <p id="successMsg">We've received your RSVP and can't wait to celebrate with you.</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;margin-top:1.5rem;color:var(--text-muted)">See you in Eswatini — 17 October 2026</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer><em>Eugene &amp; Thandolwakhe · 17 October 2026</em></footer>
+
+<script>
+document.querySelectorAll('input[name="attending"]').forEach(r => {
+  r.addEventListener('change', function () {
+    const going = this.value === 'yes';
+    document.getElementById('guestCountGroup').style.display = going ? '' : 'none';
+    document.getElementById('mealGroup').style.display = going ? '' : 'none';
+  });
+});
+
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
+function hideErr(id) { document.getElementById(id).classList.remove('visible'); }
+function markField(id, error) {
+  const input = document.getElementById(id);
+  input.classList.toggle('error', error);
+}
+
+document.getElementById('submitBtn').addEventListener('click', function () {
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  let valid = true;
+
+  if (!fname) { showErr('fnameError', 'Please enter your first name'); markField('fname', true); valid = false; }
+  else { hideErr('fnameError'); markField('fname', false); }
+
+  if (!lname) { showErr('lnameError', 'Please enter your last name'); markField('lname', true); valid = false; }
+  else { hideErr('lnameError'); markField('lname', false); }
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!email || !emailValid) { showErr('emailError', 'Please enter a valid email address'); markField('email', true); valid = false; }
+  else { hideErr('emailError'); markField('email', false); }
+
+  if (!valid) return;
+
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Sending\u2026';
+
+  const attending = document.querySelector('input[name="attending"]:checked').value;
+  const data = {
+    first_name: fname,
+    last_name: lname,
+    email: email,
+    attending: attending,
+    guest_count: document.getElementById('guestCount').value,
+    meal_preference: document.getElementById('meal').value,
+    notes: document.getElementById('notes').value
+  };
+
+  fetch('https://formspree.io/f/mlgoolab', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(res => {
+    if (res.ok) {
+      document.getElementById('rsvpForm').style.display = 'none';
+      const s = document.getElementById('rsvpSuccess'); s.style.display = 'block';
+      if (attending === 'yes') {
+        document.getElementById('successTitle').textContent = "We'll see you there, " + fname + "!";
+        document.getElementById('successMsg').textContent = "Your RSVP has been received. We're so excited to celebrate with you.";
+      } else {
+        document.getElementById('successTitle').textContent = "We'll miss you, " + fname + ".";
+        document.getElementById('successMsg').textContent = "Thank you for letting us know. You'll be in our hearts on the day.";
+      }
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Submit RSVP';
+      alert('Something went wrong. Please try again.');
+    }
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.textContent = 'Submit RSVP';
+    alert('Something went wrong. Please check your connection and try again.');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Gallery · Eugene &amp; Thandolwakhe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="main.js" defer></script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">Eugene &amp; Thandolwakhe</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="party.html">Wedding Party</a></li>
+      <li><a href="travel.html">Travel</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="rsvp.html">RSVP</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header fade-up">
+    <div class="page-eyebrow">Our Journey</div>
+    <div class="page-title">Gallery</div>
+    <div class="page-subtitle">A few moments from our story so far</div>
+  </div>
+  <div class="page-body">
+    <p class="gallery-intro fade-up">Photos coming soon — check back as we get closer to the day.</p>
+    <div class="gallery-grid">
+      <div class="gallery-item tall fade-up" data-index="0" data-caption="The Beginning">
+        <img src="images/IMG_2484.jpeg" alt="The Beginning"/>
+      </div>
+      <div class="gallery-item fade-up" data-index="1" data-caption="Our Favourite Moment">
+        <img src="images/IMG_2490.jpeg" alt="Our Favourite Moment"/>
+      </div>
+      <div class="gallery-item fade-up" data-index="2" data-caption="Where It All Started">
+        <img src="images/IMG_2785.jpeg" alt="Where It All Started"/>
+      </div>
+      <div class="gallery-item wide fade-up" data-index="3" data-caption="A Day We'll Never Forget">
+        <img src="images/IMG_3326.jpeg" alt="A Day We'll Never Forget"/>
+      </div>
+      <div class="gallery-item fade-up" data-index="4" data-caption="Together Always">
+        <img src="images/IMG_4001.jpeg" alt="Together Always"/>
+      </div>
+      <div class="gallery-item fade-up" data-index="5" data-caption="Golden Hour">
+        <img src="images/IMG_5776.jpg" alt="Golden Hour"/>
+      </div>
+      <div class="gallery-item wide fade-up" data-index="6" data-caption="Celebrating with Family">
+        <img src="images/IMG_7816.jpg" alt="Celebrating with Family"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner" id="lightboxInner">
+      <div class="lightbox-ph" id="lightboxPh">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span>Photo coming soon</span>
+      </div>
+      <img id="lightboxImg" src="" alt="" style="display:none"/>
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+    <button class="lightbox-close" id="lightboxClose">&#x2715;</button>
+    <button class="lightbox-prev" id="lightboxPrev">&#8249;</button>
+    <button class="lightbox-next" id="lightboxNext">&#8250;</button>
+  </div>
+</main>
+
+<footer><em>Eugene &amp; Thandolwakhe · 17 October 2026</em></footer>
+
+<script>
+const items = Array.from(document.querySelectorAll('.gallery-item'));
+let current = 0;
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxPh = document.getElementById('lightboxPh');
+const lightboxCaption = document.getElementById('lightboxCaption');
+
+function openLightbox(index) {
+  current = ((index % items.length) + items.length) % items.length;
+  const item = items[current];
+  const img = item.querySelector('img');
+  lightboxCaption.textContent = item.dataset.caption || '';
+  if (img) {
+    lightboxPh.style.display = 'none';
+    lightboxImg.src = img.src;
+    lightboxImg.style.display = 'block';
+  } else {
+    lightboxPh.style.display = 'flex';
+    lightboxImg.style.display = 'none';
+  }
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+}
+items.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+document.getElementById('lightboxPrev').addEventListener('click', () => openLightbox(current - 1));
+document.getElementById('lightboxNext').addEventListener('click', () => openLightbox(current + 1));
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') openLightbox(current - 1);
+  if (e.key === 'ArrowRight') openLightbox(current + 1);
+});
+</script>
+</body>
+</html>
