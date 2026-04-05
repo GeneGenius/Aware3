@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Registry · Eugene &amp; Thando</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="main.js" defer></script>
+<style>
+  /* ── Registry-specific styles ── */
+  .registry-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+  .filter-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.45rem 1.2rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--gold-light); color: var(--gold); }
+  .filter-btn.active { border-color: var(--gold); background: var(--gold-pale); color: var(--gold-mid); }
+
+  .registry-category-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 2.5rem 0 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .registry-category-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .registry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .registry-card {
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--gold-light);
+    padding: 1.5rem 1.25rem;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .registry-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+  .registry-card.claimed {
+    opacity: 0.55;
+    border-top-color: var(--border);
+    pointer-events: none;
+  }
+
+  .registry-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    line-height: 1.3;
+  }
+  .registry-card-category {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .registry-card-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .registry-card-spacer { flex: 1; }
+
+  /* ── Card inner elements ── */
+  .card-category {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    line-height: 1.3;
+    margin-top: 0.15rem;
+  }
+  .card-qty {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+  .card-claimed {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #2e7d4f;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .btn-claim {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--charcoal);
+    background: transparent;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  .btn-claim:hover { background: var(--charcoal); color: var(--white); }
+
+  .claim-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--charcoal);
+    background: transparent;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  .claim-btn:hover { background: var(--charcoal); color: var(--white); }
+
+  .claimed-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2e7d4f;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .claimed-badge svg { flex-shrink: 0; }
+
+  /* ── Loading / error states ── */
+  .registry-loading {
+    text-align: center;
+    padding: 4rem 2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+  }
+  .registry-error {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #c0392b;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Setup banner (shown when no script URL is configured) ── */
+  .setup-banner {
+    background: #fff8e1;
+    border: 1px solid #f0c040;
+    border-left: 3px solid #e6a800;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #5a4200;
+    line-height: 1.75;
+  }
+  .setup-banner strong { color: #3d2c00; }
+  .setup-banner code {
+    font-family: monospace;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 5px;
+    font-size: 0.82rem;
+  }
+
+  /* ── Claim modal ── */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(10,8,5,0); pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s ease;
+  }
+  .modal-backdrop.open { background: rgba(10,8,5,0.55); pointer-events: all; }
+  .modal {
+    background: var(--white);
+    padding: 2.5rem 2rem;
+    width: min(440px, 90vw);
+    transform: translateY(20px); opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border-top: 2px solid var(--gold-light);
+  }
+  .modal-backdrop.open .modal { transform: none; opacity: 1; }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem;
+    font-weight: 300;
+    color: var(--charcoal);
+    margin-bottom: 0.3rem;
+  }
+  .modal-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .modal-cancel {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    flex: 1;
+  }
+  .modal-cancel:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .modal-confirm {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid var(--charcoal);
+    background: var(--charcoal);
+    color: var(--white);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    flex: 2;
+  }
+  .modal-confirm:hover { background: var(--charcoal-mid); border-color: var(--charcoal-mid); }
+  .modal-confirm:disabled { opacity: 0.5; cursor: default; }
+
+  /* ── Contribution card ── */
+  .contribution-banner {
+    border: 1px solid var(--gold-light);
+    border-top: 2px solid var(--gold);
+    background: var(--gold-pale);
+    padding: 1.75rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .contribution-banner-text {}
+  .contribution-banner-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-mid);
+    margin-bottom: 0.3rem;
+  }
+  .contribution-banner-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--charcoal);
+    margin-bottom: 0.25rem;
+  }
+  .contribution-banner-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .btn-contribute {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.6rem;
+    border: 1px solid var(--gold-mid);
+    background: transparent;
+    color: var(--gold-mid);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-contribute:hover { background: var(--gold-mid); color: #fff; }
+
+  @media(max-width:640px){
+    .registry-grid { grid-template-columns: 1fr 1fr; }
+    .modal-actions { flex-direction: column; }
+    .contribution-banner { flex-direction: column; align-items: flex-start; }
+  }
+  @media(max-width:400px){
+    .registry-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">Eugene &amp; Thando</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="party.html">Wedding Party</a></li>
+      <li><a href="travel.html">Travel</a></li>
+      <li><a href="things-to-do.html">Things To Do</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="registry.html" class="active">Registry</a></li>
+      <li><a href="rsvp.html">RSVP</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header fade-up">
+    <div class="page-eyebrow">Eugene &amp; Thando</div>
+    <h1 class="page-title">Gift Registry</h1>
+    <p class="page-subtitle">Help us build our home together</p>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Setup banner — hidden once SCRIPT_URL is set -->
+    <div class="setup-banner" id="setupBanner" style="display:none">
+      <strong>Setup required:</strong> To activate the live registry, deploy your Google Apps Script and paste the web app URL as
+      <code>SCRIPT_URL</code> at the top of the <code>&lt;script&gt;</code> block at the bottom of this file.
+      See the comments in the script for the Apps Script code to deploy.
+    </div>
+
+    <div id="registryRoot">
+      <div class="registry-loading">Loading gifts&hellip;</div>
+    </div>
+
+  </div>
+</main>
+
+<footer><em>Eugene &amp; Thando · 17 October 2026</em></footer>
+
+<!-- ── Claim modal ── -->
+<div class="modal-backdrop" id="claimModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Claim this gift</div>
+    <div class="modal-subtitle" id="modalItemName"></div>
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label" for="claimName">Your name</label>
+      <input class="form-input" type="text" id="claimName" placeholder="e.g. Sarah Johnson" autocomplete="name"/>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modalCancel">Cancel</button>
+      <button class="modal-confirm" id="modalConfirm">Claim Gift</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Contribution modal ── -->
+<div class="modal-backdrop" id="contributeModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-title">Make a Contribution</div>
+    <div class="modal-subtitle">Every amount is appreciated — no minimum, no maximum.</div>
+    <div class="form-group">
+      <label class="form-label" for="contributeName">Your name</label>
+      <input class="form-input" type="text" id="contributeName" placeholder="e.g. Sarah Johnson" autocomplete="name"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="contributeEmail">Email address</label>
+      <input class="form-input" type="email" id="contributeEmail" placeholder="e.g. sarah@email.com" autocomplete="email"/>
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">Amount</label>
+      <div style="display:flex;gap:0.5rem">
+        <select class="form-select" id="contributeCurrency" style="width:100px;flex-shrink:0">
+          <option value="USD">USD $</option>
+          <option value="EUR">EUR €</option>
+          <option value="ZAR">ZAR R</option>
+          <option value="CZK">CZK Kč</option>
+          <option value="GHS">GHS ₵</option>
+        </select>
+        <input class="form-input" type="number" id="contributeAmount" placeholder="e.g. 50" min="1" style="flex:1"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="contributeCancelBtn">Cancel</button>
+      <button class="modal-confirm" id="contributeConfirmBtn">Send Contribution</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+ * ─────────────────────────────────────────────────────────────
+ *  CONFIGURATION — replace with your Apps Script web app URL
+ * ─────────────────────────────────────────────────────────────
+ *  Steps:
+ *  1. Open script.google.com and create a new project.
+ *  2. Paste the Apps Script code below into Code.gs.
+ *  3. Replace YOUR_SHEET_ID in the script with your Google Sheet ID.
+ *  4. Deploy → New deployment → Web app.
+ *     Execute as: Me | Who has access: Anyone
+ *  5. Copy the deployment URL and paste it as SCRIPT_URL below.
+ *
+ *  ── Apps Script code (Code.gs) ────────────────────────────
+ *
+ *  var SHEET_ID = 'YOUR_SHEET_ID';
+ *
+ *  function doGet() {
+ *    var sheet = SpreadsheetApp.openById(SHEET_ID).getActiveSheet();
+ *    var data  = sheet.getDataRang[0] || ''),   // Column A: Item name
+ *        category:  String(row[1] || ''),   // Column B: Category
+ *        qty:       String(row[2] || ''),   // Column C: Qty Needed
+ *        price:     String(row[3] || ''),   // Column D: Approx. Price (USD)
+ *        claimedBy: row[4] ? String(row[4]) : null,          // Column E: Claimed By
+ *        status:    row[5] ? String(row[5]) : 'Available'    // Column F: Status
+ *      });
+ *    }
+ *    return ContentService
+ *      .createTextOutput(JSON.stringify(items))
+ *      .setMimeType(ContentService.MimeType.JSON);
+ *  }
+ *
+ *  function doPost(e) {
+ *    var payload = JSON.parse(e.postData.contents);
+ *    var sheet   = SpreadsheetApp.openById(SHEET_ID).getActiveSheet();
+ *    var data    = sheet.getDataRange().getValues();
+ *    for (var i = 1; i < data.length; i++) {
+ *      if (String(i + 1) === String(payload.id)) {
+ *        if (data[i][4] || (data[i][5] && data[i][5] !== 'Available')) {
+ *          return ContentService
+ *            .createTextOutput(JSON.stringify({ success: false, message: 'Already claimed' }))
+ *            .setMimeType(ContentService.MimeType.JSON);
+ *        }
+ *        sheet.getRange(i + 1, 5).setValue(payload.claimerName);  // Col E: Claimed By
+ *        sheet.getRange(i + 1, 6).setValue('Claimed');             // Col F: Status
+ *        return ContentService
+ *          .createTextOutput(JSON.stringify({ success: true }))
+ *          .setMimeType(ContentService.MimeType.JSON);
+ *      }
+ *    }
+ *    return ContentService
+ *      .createTextOutput(JSON.stringify({ success: false, message: 'Item not found' }))
+ *      .setMimeType(ContentService.MimeType.JSON);
+ *  }
+ *
+ *  ── Google Sheet column layout ────────────────────────────
+ *  A: Item name
+ *  B: Category        (Kitchen, Bedroom, Appliances, etc.)
+ *  C: Qty Needed
+ *  D: Approx. Price (USD)
+ *  E: Claimed By      (leave blank — filled automatically)
+ *  F: Status          (Available / Claimed)
+ * ─────────────────────────────────────────────────────────────
+ */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYrGD0ASX84kTNaf6gVZSJjyr-MLmpctzQH2jdHDhaQP7wQws-oxMHPEPbAfZIUAZE/exec'; // ← paste your Apps Script web app URL here
+
+// ── State ──────────────────────────────────────────────────
+var allItems    = [];
+var activeFilter = 'ALL';
+var pendingItem  = null;
+
+// ── State ──────────────────────────────────────────────────
+var allItems     = [];
+var activeFilter = 'ALL';
+var pendingItem  = null;
+
+// ── Boot: attach click delegation ONCE, then load data ─────
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('registryRoot').addEventListener('click', function(e) {
+    var btn = e.target.closest('.btn-claim');
+    if (btn) claimItem(btn.dataset.id, btn.dataset.name);
+  });
+
+  if (!SCRIPT_URL) {
+    document.getElementById('setupBanner').style.display = 'block';
+    document.getElementById('registryRoot').innerHTML =
+      '<div class="registry-loading">Configure SCRIPT_URL to load the registry.</div>';
+    return;
+  }
+  loadRegistry();
+});
+
+// ── Fetch ──────────────────────────────────────────────────
+function loadRegistry() {
+  document.getElementById('registryRoot').innerHTML =
+    '<div class="registry-loading">Loading gifts\u2026</div>';
+
+  fetch(SCRIPT_URL)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      console.log('First item:', JSON.stringify(data[0]));
+      allItems = data;
+      renderPage();
+    })
+    .catch(function(err) {
+      console.error('Registry fetch error:', err);
+      document.getElementById('registryRoot').innerHTML =
+        '<div class="registry-error">Unable to load the registry. Please try again later.</div>';
+    });
+}
+
+// ── Full page render (filter bar + cards) ──────────────────
+function renderPage() {
+  var root = document.getElementById('registryRoot');
+  root.innerHTML = '';
+
+  // Build filter bar from unique category values in fetched data
+  var filterBar = document.createElement('div');
+  filterBar.className = 'registry-filter-bar';
+  var categories = ['ALL'].concat(Array.from(new Set(allItems.map(function(i) { return i.category; }))));
+  categories.forEach(function(cat) {
+    var btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat === 'ALL' ? ' active' : '');
+    btn.textContent = cat;
+    btn.dataset.cat = cat;
+    btn.onclick = function() { scrollToCategory(cat); };
+    filterBar.appendChild(btn);
+  });
+  root.appendChild(filterBar);
+
+  // Contribution banner
+  var banner = document.createElement('div');
+  banner.className = 'contribution-banner';
+  banner.innerHTML =
+    '<div class="contribution-banner-text">' +
+      '<div class="contribution-banner-eyebrow">Monetary Gift</div>' +
+      '<div class="contribution-banner-title">Prefer to contribute a cash gift?</div>' +
+      '<div class="contribution-banner-sub">Any amount is welcome and deeply appreciated.</div>' +
+    '</div>' +
+    '<button class="btn-contribute" id="openContributeBtn">Contribute a Gift</button>';
+  root.appendChild(banner);
+
+  // Cards wrapper (stays in DOM; only its contents change)
+  var wrap = document.createElement('div');
+  wrap.id = 'cardsWrap';
+  root.appendChild(wrap);
+
+  document.getElementById('openContributeBtn').addEventListener('click', openContributeModal);
+
+  renderCards();
+}
+
+// ── Scroll to category ─────────────────────────────────────
+function scrollToCategory(cat) {
+  setActiveTab(cat);
+  if (cat === 'ALL') {
+    document.getElementById('cardsWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  var id = 'cat-' + cat.toLowerCase().replace(/\s+/g, '-');
+  var el = document.getElementById(id);
+  if (el) {
+    var offset = 80; // nav height
+    var top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+}
+
+function setActiveTab(cat) {
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+}
+
+// ── Highlight active tab on scroll (IntersectionObserver) ──
+function initScrollSpy() {
+  if (!('IntersectionObserver' in window)) return;
+  var labels = document.querySelectorAll('.registry-category-label');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var cat = entry.target.textContent;
+        setActiveTab(cat);
+      }
+    });
+  }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+  labels.forEach(function(label) { observer.observe(label); });
+}
+
+// ── Cards render ───────────────────────────────────────────
+function renderCards() {
+  var wrap = document.getElementById('cardsWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  var filtered = activeFilter === 'ALL'
+    ? allItems
+    : allItems.filter(function(i) { return i.category === activeFilter; });
+
+  if (filtered.length === 0) {
+    wrap.innerHTML = '<div class="registry-loading" style="padding:2rem">No items in this category.</div>';
+    return;
+  }
+
+  // Group by category
+  var grouped = {}, groupOrder = [];
+  filtered.forEach(function(item) {
+    if (!grouped[item.category]) { grouped[item.category] = []; groupOrder.push(item.category); }
+    grouped[item.category].push(item);
+  });
+
+  groupOrder.forEach(function(cat) {
+    var label = document.createElement('div');
+    label.className = 'registry-category-label';
+    label.textContent = cat;
+    label.id = 'cat-' + cat.toLowerCase().replace(/\s+/g, '-');
+    wrap.appendChild(label);
+
+    var grid = document.createElement('div');
+    grid.className = 'registry-grid';
+    filtered.filter(function(i) { return i.category === cat; }).forEach(function(item) {
+      grid.appendChild(buildCard(item));
+    });
+    wrap.appendChild(grid);
+  });
+
+  initScrollSpy();
+}
+
+function buildCard(item) {
+  var card = document.createElement('div');
+  card.className = 'registry-card' + (item.claimedBy ? ' claimed' : '');
+  card.innerHTML =
+    '<div class="card-category">' + item.category + '</div>' +
+    '<h3 class="card-name">' + item.name + '</h3>' +
+    '<p class="card-qty">Qty needed: ' + item.qty + '</p>' +
+    (item.claimedBy
+      ? '<div class="card-claimed">\u2713 Claimed by ' + item.claimedBy + '</div>'
+      : '<button class="btn-claim" data-id="' + item.id + '" data-name="' + item.name.replace(/"/g, '&quot;') + '">CLAIM THIS GIFT</button>'
+    );
+  return card;
+}
+
+// ── Claim modal ─────────────────────────────────────────────
+function claimItem(id, name) {
+  pendingItem = { id: id, name: name };
+  document.getElementById('modalItemName').textContent = name;
+  document.getElementById('claimName').value = '';
+  document.getElementById('modalConfirm').disabled = false;
+  document.getElementById('modalConfirm').textContent = 'Claim Gift';
+  document.getElementById('claimModal').classList.add('open');
+  setTimeout(function() { document.getElementById('claimName').focus(); }, 50);
+}
+
+function closeModal() {
+  document.getElementById('claimModal').classList.remove('open');
+  pendingItem = null;
+}
+
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+
+document.getElementById('claimModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById('claimName').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('modalConfirm').click();
+  if (e.key === 'Escape') closeModal();
+});
+
+document.getElementById('modalConfirm').addEventListener('click', function() {
+  var guestName = document.getElementById('claimName').value.trim();
+  if (!guestName) {
+    document.getElementById('claimName').classList.add('error');
+    document.getElementById('claimName').focus();
+    return;
+  }
+  document.getElementById('claimName').classList.remove('error');
+
+  var confirmBtn = this;
+  confirmBtn.disabled = true;
+  confirmBtn.innerHTML = '<span class="spinner"></span>Claiming\u2026';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ id: pendingItem.id, claimerName: guestName })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    if (res.success) {
+      allItems = allItems.map(function(item) {
+        if (String(item.id) === String(pendingItem.id)) {
+          return Object.assign({}, item, { claimedBy: guestName, status: 'Claimed' });
+        }
+        return item;
+      });
+      closeModal();
+      renderCards();
+    } else {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Claim Gift';
+      alert(res.message || 'This item may already be claimed.');
+      loadRegistry();
+    }
+  })
+  .catch(function() {
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = 'Claim Gift';
+    alert('Something went wrong. Please try again.');
+  });
+});
+// ── Contribution modal ─────────────────────────────────────
+function openContributeModal() {
+  document.getElementById('contributeName').value = '';
+  document.getElementById('contributeAmount').value = '';
+  document.getElementById('contributeConfirmBtn').disabled = false;
+  document.getElementById('contributeConfirmBtn').textContent = 'Send Contribution';
+  document.getElementById('contributeModal').classList.add('open');
+  setTimeout(function() { document.getElementById('contributeName').focus(); }, 50);
+}
+
+function closeContributeModal() {
+  document.getElementById('contributeModal').classList.remove('open');
+}
+
+document.getElementById('contributeCancelBtn').addEventListener('click', closeContributeModal);
+
+document.getElementById('contributeModal').addEventListener('click', function(e) {
+  if (e.target === this) closeContributeModal();
+});
+
+document.getElementById('contributeConfirmBtn').addEventListener('click', function() {
+  var name     = document.getElementById('contributeName').value.trim();
+  var email    = document.getElementById('contributeEmail').value.trim();
+  var amount   = document.getElementById('contributeAmount').value.trim();
+  var currency = document.getElementById('contributeCurrency').value;
+
+  var valid = true;
+  ['contributeName','contributeEmail','contributeAmount'].forEach(function(id) {
+    document.getElementById(id).classList.remove('error');
+  });
+  if (!name)   { document.getElementById('contributeName').classList.add('error');   valid = false; }
+  if (!email)  { document.getElementById('contributeEmail').classList.add('error');  valid = false; }
+  if (!amount) { document.getElementById('contributeAmount').classList.add('error'); valid = false; }
+  if (!valid) return;
+
+  var symbols = { USD: '$', EUR: '\u20ac', ZAR: 'R', CZK: 'K\u010d', GHS: '\u20b5' };
+  var symbol  = symbols[currency] || '';
+
+  var btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Sending\u2026';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'contribute', claimerName: name, email: email, amount: amount, currency: currency })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() {
+    closeContributeModal();
+    alert('Thank you, ' + name + '! Your contribution of ' + symbol + amount + ' ' + currency + ' has been noted. We are so grateful.');
+  })
+  .catch(function() {
+    closeContributeModal();
+    alert('Thank you, ' + name + '! Your generosity means the world to us.');
+  });
+});
+</script>
+</body>
+</html>

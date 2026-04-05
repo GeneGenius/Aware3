@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Things To Do · Eugene &amp; Thando</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<script src="main.js" defer></script>
+<style>
+  .tag-nature    { border-color:#2e7d4f; color:#2e7d4f; }
+  .tag-culture   { border-color:#3789a8; color:#3789a8; }
+  .tag-adventure { border-color:#a08040; color:#a08040; }
+  .tag-shopping  { border-color:#b05a7a; color:#b05a7a; }
+  .tag-food      { border-color:#c2652a; color:#c2652a; }
+  .tag-history   { border-color:#6b6b6b; color:#6b6b6b; }
+
+  .section-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.75;
+  }
+
+  .ttd-note {
+    text-align: center;
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--gold-light);
+    padding: 2rem 1.5rem;
+    margin-top: 3rem;
+    background: var(--gold-pale);
+  }
+  .ttd-note p {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">Eugene &amp; Thando</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="party.html">Wedding Party</a></li>
+      <li><a href="travel.html">Travel</a></li>
+      <li><a href="things-to-do.html" class="active">Things To Do</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="registry.html">Registry</a></li>
+      <li><a href="rsvp.html">RSVP</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header fade-up">
+    <div class="page-eyebrow">Explore With Us</div>
+    <div class="page-title">Things To Do</div>
+    <div class="page-subtitle">Make the most of your time in Southern Africa</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- ── Eswatini ── -->
+    <div class="party-section-label fade-up">Eswatini</div>
+    <p class="section-intro fade-up">
+      A jewel of Southern Africa, Eswatini packs extraordinary wildlife, rich Swazi culture and stunning landscapes into one of the continent's smallest kingdoms. Here are our favourite ways to explore it.
+    </p>
+    <div class="travel-grid stagger-parent">
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Hlane Royal National Park</div>
+        <div class="travel-card-body">One of Swaziland's largest game reserves — home to lions, elephants, rhinos, hippos and hundreds of bird species. Perfect for a safari day trip.</div>
+        <span class="tag tag-nature">Nature</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Mlilwane Wildlife Sanctuary</div>
+        <div class="travel-card-body">A peaceful wildlife sanctuary near Lobamba. Guests can hike, cycle or ride horses through the reserve alongside hippos and antelope.</div>
+        <span class="tag tag-nature">Nature</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Mantenga Cultural Village</div>
+        <div class="travel-card-body">An authentic living Swazi village showcasing traditional architecture, dance performances and local crafts. A must-visit for cultural immersion.</div>
+        <span class="tag tag-culture">Culture</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Sibebe Rock</div>
+        <div class="travel-card-body">The world's second largest exposed granite dome. A challenging and rewarding hike with breathtaking panoramic views over the kingdom.</div>
+        <span class="tag tag-adventure">Adventure</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Swazi Candles Craft Market</div>
+        <div class="travel-card-body">Famous for hand-crafted candles in vibrant shapes and colours. A great place to pick up unique souvenirs and local artwork.</div>
+        <span class="tag tag-shopping">Shopping</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Malolotja Nature Reserve</div>
+        <div class="travel-card-body">Stunning highland wilderness with waterfalls, ancient cycad forests and excellent hiking trails. One of Eswatini's most scenic natural areas.</div>
+        <span class="tag tag-nature">Nature</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Ezulwini Valley</div>
+        <div class="travel-card-body">The Valley of Heaven — a lush stretch of land housing the royal palace, craft markets, spas and the famous Gables Shopping Centre.</div>
+        <span class="tag tag-culture">Culture</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Phophonyane Falls</div>
+        <div class="travel-card-body">A beautiful private nature reserve with a stunning waterfall, forest trails and an eco-lodge. Perfect for a quiet day in nature.</div>
+        <span class="tag tag-nature">Nature</span>
+      </div>
+
+    </div>
+
+    <!-- ── Johannesburg ── -->
+    <div class="party-section-label fade-up" style="margin-top:3.5rem">Johannesburg</div>
+    <p class="section-intro fade-up">
+      South Africa's vibrant city of gold is just a few hours away and well worth a few days. From world-class museums to buzzing neighbourhoods and wildlife just outside the city — Joburg rewards curious travellers.
+    </p>
+    <div class="travel-grid stagger-parent">
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Apartheid Museum</div>
+        <div class="travel-card-body">One of the most powerful museums in the world — a moving journey through South Africa's apartheid era and the road to democracy. Essential viewing.</div>
+        <span class="tag tag-culture">Culture</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Soweto</div>
+        <div class="travel-card-body">The iconic township that shaped South Africa's history. Visit Vilakazi Street, home to both Nelson Mandela and Desmond Tutu, and explore vibrant local restaurants and shebeens.</div>
+        <span class="tag tag-culture">Culture</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Constitution Hill</div>
+        <div class="travel-card-body">A living museum and working court built on the site of the old Johannesburg Fort prison. Includes the Old Fort, Women's Jail and the Constitutional Court.</div>
+        <span class="tag tag-culture">Culture</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Gold Reef City</div>
+        <div class="travel-card-body">A theme park built on a historic gold mine. Includes rides, a casino, period buildings and underground mine tours showing how gold was mined.</div>
+        <span class="tag tag-adventure">Adventure</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Neighbourgoods Market</div>
+        <div class="travel-card-body">Braamfontein's famous Saturday market — the best local food, craft beer, coffee and artisan goods all in one vibrant spot. A true Joburg institution.</div>
+        <span class="tag tag-food">Food</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Lion &amp; Safari Park</div>
+        <div class="travel-card-body">Drive-through safari just 45 minutes from the city centre featuring lions, cheetahs, wild dogs, giraffes and more. Great for families.</div>
+        <span class="tag tag-nature">Nature</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Maboneng Precinct</div>
+        <div class="travel-card-body">Joburg's coolest creative neighbourhood — art galleries, independent restaurants, rooftop bars and weekend markets in a beautifully regenerated urban precinct.</div>
+        <span class="tag tag-culture">Culture</span>
+      </div>
+
+      <div class="travel-card fade-up">
+        <div class="travel-card-title">Cradle of Humankind</div>
+        <div class="travel-card-body">A UNESCO World Heritage Site containing some of the world's oldest hominid fossils. The Maropeng visitor centre tells the story of human origins.</div>
+        <span class="tag tag-history">History</span>
+      </div>
+
+    </div>
+
+    <!-- ── Bottom note ── -->
+    <div class="ttd-note fade-up">
+      <p>Need help planning your itinerary or getting around? Feel free to reach out to us and we will do our best to point you in the right direction.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer><em>Eugene &amp; Thando · 17 October 2026</em></footer>
+
+</body>
+</html>
