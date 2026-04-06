@@ -265,6 +265,110 @@
   .modal-confirm:hover { background: var(--charcoal-mid); border-color: var(--charcoal-mid); }
   .modal-confirm:disabled { opacity: 0.5; cursor: default; }
 
+  /* ── Contribution modal tabs ── */
+  .contrib-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .contrib-tab {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.2rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .contrib-tab.active { color: var(--gold-mid); border-bottom-color: var(--gold-mid); }
+  .contrib-panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+  }
+  .contrib-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .contrib-detail-row:last-child { border-bottom: none; }
+  .contrib-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .contrib-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--charcoal);
+    text-align: right;
+  }
+  .contrib-copyable {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .contrib-ref {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+  .copy-btn {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--gold-light);
+    background: transparent;
+    color: var(--gold-mid);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--gold-pale); }
+  .copy-btn.copied { border-color: #2e7d4f; color: #2e7d4f; }
+  .contrib-or {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 1.25rem 0 1rem;
+    position: relative;
+  }
+  .btn-paypal {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    background: #003087;
+    color: #fff;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-paypal:hover { background: #001f5e; }
+
   /* ── Contribution card ── */
   .contribution-banner {
     border: 1px solid var(--gold-light);
@@ -386,34 +490,80 @@
 
 <!-- ── Contribution modal ── -->
 <div class="modal-backdrop" id="contributeModal" role="dialog" aria-modal="true">
-  <div class="modal">
-    <div class="modal-title">Make a Contribution</div>
-    <div class="modal-subtitle">Every amount is appreciated — no minimum, no maximum.</div>
-    <div class="form-group">
-      <label class="form-label" for="contributeName">Your name</label>
-      <input class="form-input" type="text" id="contributeName" placeholder="e.g. Sarah Johnson" autocomplete="name"/>
+  <div class="modal" style="width:min(500px,92vw)">
+    <div class="modal-title">Contribute a Gift</div>
+    <div class="modal-subtitle">Every amount is deeply appreciated. Choose your preferred payment method below.</div>
+
+    <!-- Tab buttons -->
+    <div class="contrib-tabs">
+      <button class="contrib-tab active" data-tab="local">Local · Ghana</button>
+      <button class="contrib-tab" data-tab="intl">International</button>
     </div>
-    <div class="form-group">
-      <label class="form-label" for="contributeEmail">Email address</label>
-      <input class="form-input" type="email" id="contributeEmail" placeholder="e.g. sarah@email.com" autocomplete="email"/>
-    </div>
-    <div class="form-group" style="margin-bottom:0">
-      <label class="form-label">Amount</label>
-      <div style="display:flex;gap:0.5rem">
-        <select class="form-select" id="contributeCurrency" style="width:100px;flex-shrink:0">
-          <option value="USD">USD $</option>
-          <option value="EUR">EUR €</option>
-          <option value="ZAR">ZAR R</option>
-          <option value="CZK">CZK Kč</option>
-          <option value="GHS">GHS ₵</option>
-        </select>
-        <input class="form-input" type="number" id="contributeAmount" placeholder="e.g. 50" min="1" style="flex:1"/>
+
+    <!-- Tab: Local (Ghana) -->
+    <div class="contrib-panel" id="tab-local">
+      <div class="contrib-panel-title">Ghana Bank Transfer</div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Bank</span>
+        <span class="contrib-value">Ecobank Ghana</span>
+      </div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Account Name</span>
+        <span class="contrib-value">Eugene Adu-Gyamfi</span>
+      </div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Account Number</span>
+        <span class="contrib-value contrib-copyable">
+          <span id="accNum">1441002382408</span>
+          <button class="copy-btn" data-copy="1441002382408">Copy</button>
+        </span>
+      </div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Reference</span>
+        <span class="contrib-value contrib-ref">Your name + Wedding Gift</span>
       </div>
     </div>
-    <div class="modal-actions">
-      <button class="modal-cancel" id="contributeCancelBtn">Cancel</button>
-      <button class="modal-confirm" id="contributeConfirmBtn">Send Contribution</button>
+
+    <!-- Tab: International (Wise + PayPal) -->
+    <div class="contrib-panel" id="tab-intl" style="display:none">
+      <div class="contrib-panel-title">Wise Transfer</div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Send to</span>
+        <span class="contrib-value contrib-copyable">
+          <span>wise.com/pay/me/eugenea191</span>
+          <button class="copy-btn" data-copy="wise.com/pay/me/eugenea191">Copy</button>
+        </span>
+      </div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Currency</span>
+        <span class="contrib-value">Any</span>
+      </div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Reference</span>
+        <span class="contrib-value contrib-ref">Your name + Wedding Gift</span>
+      </div>
+
+      <div class="contrib-or">— or —</div>
+
+      <div class="contrib-panel-title">PayPal</div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Send to</span>
+        <span class="contrib-value contrib-copyable">
+          <span>genegyamfi318@gmail.com</span>
+          <button class="copy-btn" data-copy="genegyamfi318@gmail.com">Copy</button>
+        </span>
+      </div>
+      <div class="contrib-detail-row">
+        <span class="contrib-label">Or visit</span>
+        <span class="contrib-value contrib-copyable">
+          <span>paypal.me/genegyamfi</span>
+          <button class="copy-btn" data-copy="paypal.me/genegyamfi">Copy</button>
+        </span>
+      </div>
+      <a class="btn-paypal" href="https://paypal.me/genegyamfi" target="_blank" rel="noopener">Open PayPal</a>
     </div>
+
+    <button class="modal-cancel" id="contributeCancelBtn" style="width:100%;margin-top:1.25rem">Close</button>
   </div>
 </div>
 
@@ -731,12 +881,12 @@ document.getElementById('modalConfirm').addEventListener('click', function() {
 });
 // ── Contribution modal ─────────────────────────────────────
 function openContributeModal() {
-  document.getElementById('contributeName').value = '';
-  document.getElementById('contributeAmount').value = '';
-  document.getElementById('contributeConfirmBtn').disabled = false;
-  document.getElementById('contributeConfirmBtn').textContent = 'Send Contribution';
+  // Reset to first tab
+  document.querySelectorAll('.contrib-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelector('.contrib-tab[data-tab="local"]').classList.add('active');
+  document.getElementById('tab-local').style.display = '';
+  document.getElementById('tab-intl').style.display  = 'none';
   document.getElementById('contributeModal').classList.add('open');
-  setTimeout(function() { document.getElementById('contributeName').focus(); }, 50);
 }
 
 function closeContributeModal() {
@@ -749,41 +899,37 @@ document.getElementById('contributeModal').addEventListener('click', function(e)
   if (e.target === this) closeContributeModal();
 });
 
-document.getElementById('contributeConfirmBtn').addEventListener('click', function() {
-  var name     = document.getElementById('contributeName').value.trim();
-  var email    = document.getElementById('contributeEmail').value.trim();
-  var amount   = document.getElementById('contributeAmount').value.trim();
-  var currency = document.getElementById('contributeCurrency').value;
-
-  var valid = true;
-  ['contributeName','contributeEmail','contributeAmount'].forEach(function(id) {
-    document.getElementById(id).classList.remove('error');
+// Tab switching
+document.querySelectorAll('.contrib-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.contrib-tab').forEach(function(t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    var target = tab.dataset.tab;
+    document.getElementById('tab-local').style.display = target === 'local' ? '' : 'none';
+    document.getElementById('tab-intl').style.display  = target === 'intl'  ? '' : 'none';
   });
-  if (!name)   { document.getElementById('contributeName').classList.add('error');   valid = false; }
-  if (!email)  { document.getElementById('contributeEmail').classList.add('error');  valid = false; }
-  if (!amount) { document.getElementById('contributeAmount').classList.add('error'); valid = false; }
-  if (!valid) return;
+});
 
-  var symbols = { USD: '$', EUR: '\u20ac', ZAR: 'R', CZK: 'K\u010d', GHS: '\u20b5' };
-  var symbol  = symbols[currency] || '';
-
-  var btn = this;
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Sending\u2026';
-
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'contribute', claimerName: name, email: email, amount: amount, currency: currency })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function() {
-    closeContributeModal();
-    alert('Thank you, ' + name + '! Your contribution of ' + symbol + amount + ' ' + currency + ' has been noted. We are so grateful.');
-  })
-  .catch(function() {
-    closeContributeModal();
-    alert('Thank you, ' + name + '! Your generosity means the world to us.');
+// Copy buttons
+document.getElementById('contributeModal').addEventListener('click', function(e) {
+  var btn = e.target.closest('.copy-btn');
+  if (!btn) return;
+  var text = btn.dataset.copy;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function() {
+    // Fallback for older browsers
+    var el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 });
 </script>
